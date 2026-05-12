@@ -17,12 +17,12 @@ networks:
 
 services:
   redis:
-    image: redis:7-alpine
+    image: valkey/valkey:7-alpine
     # This is required to stay in RAM only.
-    command: redis-server --save "" --appendonly no
+    command: valkey-server --save "" --appendonly no
     # Set a size limit. See link below on how to customise.
-    # https://redis.io/docs/latest/operate/rs/databases/memory-performance/eviction-policy/
-    # --maxmemory 1gb --maxmemory-policy allkeys-lru
+    # https://valkey.io/docs/latest/operate/rs/databases/memory-performance/eviction-policy/
+    # --maxmemory 1gb --maxmemory-policy allkeys-lrulpine
     # This prevents the creation of an anonymous volume.
     tmpfs:
       - /data
@@ -61,12 +61,12 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   redis:
-    image: redis:7-alpine
+    image: valkey/valkey:7-alpine
     # This is required to stay in RAM only.
-    command: redis-server --save "" --appendonly no
+    command: valkey-server --save "" --appendonly no
     # Set a size limit. See link below on how to customise.
-    # https://redis.io/docs/latest/operate/rs/databases/memory-performance/eviction-policy/
-    # --maxmemory 1gb --maxmemory-policy allkeys-lru
+    # https://valkey.io/docs/latest/operate/rs/databases/memory-performance/eviction-policy/
+    # --maxmemory 1gb --maxmemory-policy allkeys-lrulpine
     # This prevents the creation of an anonymous volume.
     tmpfs:
       - /data
