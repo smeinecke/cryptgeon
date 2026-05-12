@@ -6,7 +6,8 @@ import { checkLinkForDownload } from '../../utils'
 const IMG_PATH = 'test/assets/image.jpg'
 
 test.describe('@web', () => {
-  test('paste image', async ({ page }) => {
+  test('paste image', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'DataTransfer.items.add(File) is only supported in Chromium')
     const checksum = await getFileChecksum(IMG_PATH)
     const imgBuffer = await readFile(IMG_PATH)
     const imgBase64 = imgBuffer.toString('base64')
