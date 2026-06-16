@@ -12,7 +12,8 @@
 	}
 
 	let { label = '', files = $bindable([]), ...rest }: Props = $props()
-	let hoverCount = $state(0)
+	let isDragging = $state(false)
+	let inputRef: HTMLInputElement | null = $state(null)
 
 	async function fileToDTO(file: File): Promise<FileDTO> {
 		return {
@@ -33,12 +34,37 @@
 
 	async function onDrop(e: DragEvent) {
 		e.preventDefault()
+		e.stopPropagation()
 		// https://developer.mozilla.org/en-US/docs/Web/API/DragEvent/dataTransfer
 		// "never null when dispatched by the browser"
-		hoverCount = 0
-		if (e.dataTransfer!.items.length != 0) {
+		isDragging = false
+		if (e.dataTransfer!.items.length !== 0) {
 			const toAdd = await Promise.all(Array.from(e.dataTransfer!.files).map(fileToDTO))
 			files = [...files, ...toAdd]
+		}
+	}
+
+	function onDragEnter(e: DragEvent) {
+		e.preventDefault()
+		e.stopPropagation()
+		isDragging = true
+	}
+
+	function onDragLeave(e: DragEvent) {
+		e.preventDefault()
+		e.stopPropagation()
+		isDragging = false
+	}
+
+	function onDragOver(e: DragEvent) {
+		e.preventDefault()
+		e.stopPropagation()
+	}
+
+	function onKeyDown(e: KeyboardEvent) {
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault()
+			inputRef?.click()
 		}
 	}
 
@@ -53,10 +79,12 @@
 	ondrop={(e: DragEvent) => {
 		if ([...e.dataTransfer!.items].some((item) => item.kind === 'file')) {
 			e.preventDefault()
+			e.stopPropagation()
 		}
 	}}
 	ondragover={(e: DragEvent) => {
 		e.preventDefault()
+		e.stopPropagation()
 	}}
 />
 
@@ -64,14 +92,17 @@
 	<small>
 		{label}
 	</small>
-	<input {...rest} type="file" onchange={onInput} multiple />
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<input bind:this={inputRef} {...rest} type="file" onchange={onInput} multiple />
 	<div
+		role="button"
+		tabindex="0"
 		class="box"
-		class:file-drag={hoverCount !== 0}
+		class:file-drag={isDragging}
 		ondrop={onDrop}
-		ondragenter={() => hoverCount++}
-		ondragleave={() => hoverCount--}
+		ondragenter={onDragEnter}
+		ondragleave={onDragLeave}
+		ondragover={onDragOver}
+		onkeydown={onKeyDown}
 	>
 		{#if files.length}
 			<div>
@@ -111,6 +142,11 @@
 
 	.box.file-drag {
 		border-color: var(--ui-clr-primary);
+	}
+
+	/* Prevent child elements from triggering dragleave during drag */
+	.box.file-drag :global(*) {
+		pointer-events: none;
 	}
 
 	.spacer {
