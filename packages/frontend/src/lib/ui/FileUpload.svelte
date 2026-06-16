@@ -38,7 +38,7 @@
 		// https://developer.mozilla.org/en-US/docs/Web/API/DragEvent/dataTransfer
 		// "never null when dispatched by the browser"
 		isDragging = false
-		if (e.dataTransfer!.items.length !== 0) {
+		if (e.dataTransfer!.files.length !== 0) {
 			const toAdd = await Promise.all(Array.from(e.dataTransfer!.files).map(fileToDTO))
 			files = [...files, ...toAdd]
 		}
@@ -51,8 +51,9 @@
 	}
 
 	function onDragLeave(e: DragEvent) {
-		e.preventDefault()
-		e.stopPropagation()
+		const box = e.currentTarget as HTMLElement
+		const related = e.relatedTarget as Node | null
+		if (related && box.contains(related)) return
 		isDragging = false
 	}
 
@@ -142,11 +143,6 @@
 
 	.box.file-drag {
 		border-color: var(--ui-clr-primary);
-	}
-
-	/* Prevent child elements from triggering dragleave during drag */
-	.box.file-drag :global(*) {
-		pointer-events: none;
 	}
 
 	.spacer {
