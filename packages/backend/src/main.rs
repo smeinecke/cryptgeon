@@ -6,15 +6,14 @@ use axum::{
 use dotenv::dotenv;
 use tower::Layer;
 use tower_http::{
-    compression::CompressionLayer,
-    normalize_path::NormalizePathLayer,
-    services::{ServeDir, ServeFile},
+    compression::CompressionLayer, normalize_path::NormalizePathLayer, services::ServeDir,
 };
 
 #[macro_use]
 extern crate lazy_static;
 
 mod config;
+mod csp;
 mod health;
 mod note;
 mod status;
@@ -43,13 +42,13 @@ async fn main() {
         .nest("/notes", notes_routes)
         .merge(status_routes);
 
-    let api_routes = Router::new()
-        .nest("/v3", v3_routes)
-        .fallback(api_not_found);
+    let api_routes = Router::new().nest("/v3", v3_routes).fallback(api_not_found);
 
-    let index = format!("{}{}", config::FRONTEND_PATH.to_string(), "/index.html");
-    let serve_dir =
-        ServeDir::new(config::FRONTEND_PATH.to_string()).fallback(ServeFile::new(index));
+    // index.html is served through csp::spa_index (per-request nonce) for "/"
+    // and unknown paths; real asset files are served statically.
+    let serve_dir = ServeDir::new(config::FRONTEND_PATH.to_string())
+        .append_index_html_on_directories(false)
+        .fallback(Router::new().fallback(csp::spa_index));
     let app = Router::new()
         .nest("/api", api_routes)
         .merge(health_routes)
