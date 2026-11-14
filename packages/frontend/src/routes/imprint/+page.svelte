@@ -2,7 +2,8 @@
 	import { goto } from '$app/navigation'
 	import { status } from '$lib/stores/status'
 
-	status.subscribe((config) => {
+	$effect(() => {
+		const config = $status
 		if (config != null) {
 			if (config.imprint_url) {
 				window.location.href = config.imprint_url

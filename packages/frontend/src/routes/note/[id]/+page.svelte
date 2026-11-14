@@ -90,8 +90,10 @@
 					}
 					break
 				case 'files':
-					const files = (content.data as any[]).map((f: any) => ({
-						...f,
+					const files = (content.data as any[]).map((f: any, i: number) => ({
+						name: f.name ?? `file-${i}`,
+						mime: f.mime ?? 'application/octet-stream',
+						size: f.size ?? f.data?.length ?? 0,
 						data: f.data instanceof Uint8Array ? f.data : new Uint8Array(f.data as any),
 					}))
 					note = {

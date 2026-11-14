@@ -12,7 +12,8 @@
 		a.download = file.name
 		document.body.appendChild(a)
 		a.click()
-		window.URL.revokeObjectURL(url)
+		// defer revocation - revoking synchronously can abort the download
+		setTimeout(() => window.URL.revokeObjectURL(url), 0)
 		a.remove()
 	}
 </script>
@@ -33,6 +34,7 @@
 
 	const RE_URL = /https?:\/\/([A-Za-z0-9\-._~:\/?#\[\]@!$&'()*+,;%=])+/g
 	let files: FileDTO[] = $state([])
+	let previews: string[] = $state([])
 
 async function downloadFile(file: FileDTO) {
 		const f = new File([file.data.slice(0)], file.name, {
@@ -42,8 +44,16 @@ async function downloadFile(file: FileDTO) {
 	}
 
 	$effect(() => {
-		if (note.meta.type === 'file') {
-			files = note.contents
+		const list: FileDTO[] = note.meta.type === 'file' ? note.contents : []
+		files = list
+		const urls = list.map((f) =>
+			f.mime?.startsWith('image/')
+				? URL.createObjectURL(new Blob([f.data.slice(0)], { type: f.mime }))
+				: ''
+		)
+		previews = urls
+		return () => {
+			for (const url of urls) if (url) URL.revokeObjectURL(url)
 		}
 	})
 	function downloadAll() {
@@ -75,21 +85,15 @@ async function downloadFile(file: FileDTO) {
 			</div>
 		{/if}
 	{:else}
-		{#each files as file}
+		{#each files as file, index}
 			<div class="note file">
 				<button onclick={() => downloadFile(file)}>
 					<b>↓ {file.name}</b>
 				</button>
 				<small> {file.mime} － {prettyBytes(file.size ?? file.data.length)}</small>
 			</div>
-			{#if file.mime.startsWith('image/')}
-				{#key file.name}
-					<img
-						src={URL.createObjectURL(new File([file.data.slice(0)], file.name, { type: file.mime }))}
-						alt={file.name}
-						class="preview"
-					/>
-				{/key}
+			{#if previews[index]}
+				<img src={previews[index]} alt={file.name} class="preview" />
 			{/if}
 		{/each}
 		<Button onclick={downloadAll}>{$t('show.download_all')}</Button>
