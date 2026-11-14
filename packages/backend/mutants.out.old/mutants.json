@@ -1,0 +1,1090 @@
+[
+  {
+    "diff": "--- src/note/model.rs\n+++ replace generate_id -> String with String::new()\n@@ -32,25 +32,17 @@\n \n #[derive(Serialize, Deserialize)]\n pub struct NoteResponse {\n     pub meta: NoteMeta,\n     pub data: Vec<u8>,\n }\n \n pub fn generate_id() -> String {\n-    let mut result = \"\".to_owned();\n-    let mut id: [u8; 1] = [0; 1];\n-    let sr = ring::rand::SystemRandom::new();\n-\n-    for _ in 0..*config::ID_LENGTH {\n-        let _ = sr.fill(&mut id);\n-        result.push_str(&bs62::encode_data(&id));\n-    }\n-    result\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     #[test]\n     fn generated_ids_match_valid_id_shape() {\n",
+    "file": "src/note/model.rs",
+    "function": {
+      "function_name": "generate_id",
+      "return_type": "-> String",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 49
+        },
+        "start": {
+          "column": 1,
+          "line": 39
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/note/model.rs:40:5: replace generate_id -> String with String::new()",
+    "package": "cryptgeon",
+    "replacement": "String::new()",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 48
+      },
+      "start": {
+        "column": 5,
+        "line": 40
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/model.rs\n+++ replace generate_id -> String with \"xyzzy\".into()\n@@ -32,25 +32,17 @@\n \n #[derive(Serialize, Deserialize)]\n pub struct NoteResponse {\n     pub meta: NoteMeta,\n     pub data: Vec<u8>,\n }\n \n pub fn generate_id() -> String {\n-    let mut result = \"\".to_owned();\n-    let mut id: [u8; 1] = [0; 1];\n-    let sr = ring::rand::SystemRandom::new();\n-\n-    for _ in 0..*config::ID_LENGTH {\n-        let _ = sr.fill(&mut id);\n-        result.push_str(&bs62::encode_data(&id));\n-    }\n-    result\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     #[test]\n     fn generated_ids_match_valid_id_shape() {\n",
+    "file": "src/note/model.rs",
+    "function": {
+      "function_name": "generate_id",
+      "return_type": "-> String",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 49
+        },
+        "start": {
+          "column": 1,
+          "line": 39
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/note/model.rs:40:5: replace generate_id -> String with \"xyzzy\".into()",
+    "package": "cryptgeon",
+    "replacement": "\"xyzzy\".into()",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 48
+      },
+      "start": {
+        "column": 5,
+        "line": 40
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace valid_id -> bool with true\n@@ -25,18 +25,17 @@\n     id: String,\n }\n \n /// Note IDs are bs62-encoded random bytes generated server-side, i.e. plain\n /// ASCII alphanumerics. Anything else can never exist, and rejecting it here\n /// keeps arbitrary cache keys (e.g. other apps on a shared instance without\n /// CACHE_PREFIX) out of reach.\n fn valid_id(id: &str) -> bool {\n-    let max = (*config::ID_LENGTH as usize) * 2;\n-    !id.is_empty() && id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n+    true /* ~ changed by cargo-mutants ~ */\n }\n \n /// Pure deserialization + validation for the create endpoint, split out so it\n /// can be unit-tested and fuzzed without HTTP or a live cache.\n pub fn parse_create(body: &[u8]) -> Result<(NoteMeta, Vec<u8>), &'static str> {\n     let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n \n     let mut meta = req.meta;\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "valid_id",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 35
+        },
+        "start": {
+          "column": 1,
+          "line": 28
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/note/routes.rs:33:5: replace valid_id -> bool with true",
+    "package": "cryptgeon",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 87,
+        "line": 34
+      },
+      "start": {
+        "column": 5,
+        "line": 33
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace valid_id -> bool with false\n@@ -25,18 +25,17 @@\n     id: String,\n }\n \n /// Note IDs are bs62-encoded random bytes generated server-side, i.e. plain\n /// ASCII alphanumerics. Anything else can never exist, and rejecting it here\n /// keeps arbitrary cache keys (e.g. other apps on a shared instance without\n /// CACHE_PREFIX) out of reach.\n fn valid_id(id: &str) -> bool {\n-    let max = (*config::ID_LENGTH as usize) * 2;\n-    !id.is_empty() && id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n+    false /* ~ changed by cargo-mutants ~ */\n }\n \n /// Pure deserialization + validation for the create endpoint, split out so it\n /// can be unit-tested and fuzzed without HTTP or a live cache.\n pub fn parse_create(body: &[u8]) -> Result<(NoteMeta, Vec<u8>), &'static str> {\n     let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n \n     let mut meta = req.meta;\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "valid_id",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 35
+        },
+        "start": {
+          "column": 1,
+          "line": 28
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/note/routes.rs:33:5: replace valid_id -> bool with false",
+    "package": "cryptgeon",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 87,
+        "line": 34
+      },
+      "start": {
+        "column": 5,
+        "line": 33
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace * with + in valid_id\n@@ -25,17 +25,17 @@\n     id: String,\n }\n \n /// Note IDs are bs62-encoded random bytes generated server-side, i.e. plain\n /// ASCII alphanumerics. Anything else can never exist, and rejecting it here\n /// keeps arbitrary cache keys (e.g. other apps on a shared instance without\n /// CACHE_PREFIX) out of reach.\n fn valid_id(id: &str) -> bool {\n-    let max = (*config::ID_LENGTH as usize) * 2;\n+    let max = (*config::ID_LENGTH as usize) + /* ~ changed by cargo-mutants ~ */ 2;\n     !id.is_empty() && id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n }\n \n /// Pure deserialization + validation for the create endpoint, split out so it\n /// can be unit-tested and fuzzed without HTTP or a live cache.\n pub fn parse_create(body: &[u8]) -> Result<(NoteMeta, Vec<u8>), &'static str> {\n     let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n \n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "valid_id",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 35
+        },
+        "start": {
+          "column": 1,
+          "line": 28
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:33:45: replace * with + in valid_id",
+    "package": "cryptgeon",
+    "replacement": "+",
+    "span": {
+      "end": {
+        "column": 46,
+        "line": 33
+      },
+      "start": {
+        "column": 45,
+        "line": 33
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace * with / in valid_id\n@@ -25,17 +25,17 @@\n     id: String,\n }\n \n /// Note IDs are bs62-encoded random bytes generated server-side, i.e. plain\n /// ASCII alphanumerics. Anything else can never exist, and rejecting it here\n /// keeps arbitrary cache keys (e.g. other apps on a shared instance without\n /// CACHE_PREFIX) out of reach.\n fn valid_id(id: &str) -> bool {\n-    let max = (*config::ID_LENGTH as usize) * 2;\n+    let max = (*config::ID_LENGTH as usize) / /* ~ changed by cargo-mutants ~ */ 2;\n     !id.is_empty() && id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n }\n \n /// Pure deserialization + validation for the create endpoint, split out so it\n /// can be unit-tested and fuzzed without HTTP or a live cache.\n pub fn parse_create(body: &[u8]) -> Result<(NoteMeta, Vec<u8>), &'static str> {\n     let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n \n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "valid_id",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 35
+        },
+        "start": {
+          "column": 1,
+          "line": 28
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:33:45: replace * with / in valid_id",
+    "package": "cryptgeon",
+    "replacement": "/",
+    "span": {
+      "end": {
+        "column": 46,
+        "line": 33
+      },
+      "start": {
+        "column": 45,
+        "line": 33
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace && with || in valid_id\n@@ -26,17 +26,17 @@\n }\n \n /// Note IDs are bs62-encoded random bytes generated server-side, i.e. plain\n /// ASCII alphanumerics. Anything else can never exist, and rejecting it here\n /// keeps arbitrary cache keys (e.g. other apps on a shared instance without\n /// CACHE_PREFIX) out of reach.\n fn valid_id(id: &str) -> bool {\n     let max = (*config::ID_LENGTH as usize) * 2;\n-    !id.is_empty() && id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n+    !id.is_empty() && id.len() <= max || /* ~ changed by cargo-mutants ~ */ id.bytes().all(|b| b.is_ascii_alphanumeric())\n }\n \n /// Pure deserialization + validation for the create endpoint, split out so it\n /// can be unit-tested and fuzzed without HTTP or a live cache.\n pub fn parse_create(body: &[u8]) -> Result<(NoteMeta, Vec<u8>), &'static str> {\n     let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n \n     let mut meta = req.meta;\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "valid_id",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 35
+        },
+        "start": {
+          "column": 1,
+          "line": 28
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:34:39: replace && with || in valid_id",
+    "package": "cryptgeon",
+    "replacement": "||",
+    "span": {
+      "end": {
+        "column": 41,
+        "line": 34
+      },
+      "start": {
+        "column": 39,
+        "line": 34
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace && with || in valid_id\n@@ -26,17 +26,17 @@\n }\n \n /// Note IDs are bs62-encoded random bytes generated server-side, i.e. plain\n /// ASCII alphanumerics. Anything else can never exist, and rejecting it here\n /// keeps arbitrary cache keys (e.g. other apps on a shared instance without\n /// CACHE_PREFIX) out of reach.\n fn valid_id(id: &str) -> bool {\n     let max = (*config::ID_LENGTH as usize) * 2;\n-    !id.is_empty() && id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n+    !id.is_empty() || /* ~ changed by cargo-mutants ~ */ id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n }\n \n /// Pure deserialization + validation for the create endpoint, split out so it\n /// can be unit-tested and fuzzed without HTTP or a live cache.\n pub fn parse_create(body: &[u8]) -> Result<(NoteMeta, Vec<u8>), &'static str> {\n     let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n \n     let mut meta = req.meta;\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "valid_id",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 35
+        },
+        "start": {
+          "column": 1,
+          "line": 28
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:34:20: replace && with || in valid_id",
+    "package": "cryptgeon",
+    "replacement": "||",
+    "span": {
+      "end": {
+        "column": 22,
+        "line": 34
+      },
+      "start": {
+        "column": 20,
+        "line": 34
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ delete ! in valid_id\n@@ -26,17 +26,17 @@\n }\n \n /// Note IDs are bs62-encoded random bytes generated server-side, i.e. plain\n /// ASCII alphanumerics. Anything else can never exist, and rejecting it here\n /// keeps arbitrary cache keys (e.g. other apps on a shared instance without\n /// CACHE_PREFIX) out of reach.\n fn valid_id(id: &str) -> bool {\n     let max = (*config::ID_LENGTH as usize) * 2;\n-    !id.is_empty() && id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n+     /* ~ changed by cargo-mutants ~ */id.is_empty() && id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n }\n \n /// Pure deserialization + validation for the create endpoint, split out so it\n /// can be unit-tested and fuzzed without HTTP or a live cache.\n pub fn parse_create(body: &[u8]) -> Result<(NoteMeta, Vec<u8>), &'static str> {\n     let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n \n     let mut meta = req.meta;\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "valid_id",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 35
+        },
+        "start": {
+          "column": 1,
+          "line": 28
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "src/note/routes.rs:34:5: delete ! in valid_id",
+    "package": "cryptgeon",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 6,
+        "line": 34
+      },
+      "start": {
+        "column": 5,
+        "line": 34
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace <= with > in valid_id\n@@ -26,17 +26,17 @@\n }\n \n /// Note IDs are bs62-encoded random bytes generated server-side, i.e. plain\n /// ASCII alphanumerics. Anything else can never exist, and rejecting it here\n /// keeps arbitrary cache keys (e.g. other apps on a shared instance without\n /// CACHE_PREFIX) out of reach.\n fn valid_id(id: &str) -> bool {\n     let max = (*config::ID_LENGTH as usize) * 2;\n-    !id.is_empty() && id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n+    !id.is_empty() && id.len() > /* ~ changed by cargo-mutants ~ */ max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n }\n \n /// Pure deserialization + validation for the create endpoint, split out so it\n /// can be unit-tested and fuzzed without HTTP or a live cache.\n pub fn parse_create(body: &[u8]) -> Result<(NoteMeta, Vec<u8>), &'static str> {\n     let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n \n     let mut meta = req.meta;\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "valid_id",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 35
+        },
+        "start": {
+          "column": 1,
+          "line": 28
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:34:32: replace <= with > in valid_id",
+    "package": "cryptgeon",
+    "replacement": ">",
+    "span": {
+      "end": {
+        "column": 34,
+        "line": 34
+      },
+      "start": {
+        "column": 32,
+        "line": 34
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace parse_create -> Result<(NoteMeta, Vec<u8>), &'static str> with Ok((Default::default(), vec![]))\n@@ -32,46 +32,17 @@\n fn valid_id(id: &str) -> bool {\n     let max = (*config::ID_LENGTH as usize) * 2;\n     !id.is_empty() && id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n }\n \n /// Pure deserialization + validation for the create endpoint, split out so it\n /// can be unit-tested and fuzzed without HTTP or a live cache.\n pub fn parse_create(body: &[u8]) -> Result<(NoteMeta, Vec<u8>), &'static str> {\n-    let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n-\n-    let mut meta = req.meta;\n-\n-    if meta.views.is_none() && meta.expiration.is_none() {\n-        return Err(\"At least views or expiration must be set\");\n-    }\n-\n-    if meta.extra.len() > *config::EXTRA_SIZE_LIMIT {\n-        return Err(\"Extra data too large\");\n-    }\n-\n-    if !*config::ALLOW_ADVANCED {\n-        meta.views = Some(1);\n-        meta.expiration = None;\n-    }\n-\n-    if let Some(v) = meta.views\n-        && (v > *config::MAX_VIEWS || v < 1)\n-    {\n-        return Err(\"Invalid views\");\n-    }\n-\n-    if let Some(e) = meta.expiration\n-        && (e > *config::MAX_EXPIRATION || e < 1)\n-    {\n-        return Err(\"Invalid expiration\");\n-    }\n-\n-    Ok((meta, req.data))\n+    Ok((Default::default(), vec![])) /* ~ changed by cargo-mutants ~ */\n }\n \n pub async fn create(body: Bytes) -> Response {\n     let (meta, data) = match parse_create(&body) {\n         Ok(v) => v,\n         Err(e) => return (StatusCode::BAD_REQUEST, e).into_response(),\n     };\n \n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/note/routes.rs:40:5: replace parse_create -> Result<(NoteMeta, Vec<u8>), &'static str> with Ok((Default::default(), vec![]))",
+    "package": "cryptgeon",
+    "replacement": "Ok((Default::default(), vec![]))",
+    "span": {
+      "end": {
+        "column": 25,
+        "line": 69
+      },
+      "start": {
+        "column": 5,
+        "line": 40
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace parse_create -> Result<(NoteMeta, Vec<u8>), &'static str> with Ok((Default::default(), vec![0]))\n@@ -32,46 +32,17 @@\n fn valid_id(id: &str) -> bool {\n     let max = (*config::ID_LENGTH as usize) * 2;\n     !id.is_empty() && id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n }\n \n /// Pure deserialization + validation for the create endpoint, split out so it\n /// can be unit-tested and fuzzed without HTTP or a live cache.\n pub fn parse_create(body: &[u8]) -> Result<(NoteMeta, Vec<u8>), &'static str> {\n-    let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n-\n-    let mut meta = req.meta;\n-\n-    if meta.views.is_none() && meta.expiration.is_none() {\n-        return Err(\"At least views or expiration must be set\");\n-    }\n-\n-    if meta.extra.len() > *config::EXTRA_SIZE_LIMIT {\n-        return Err(\"Extra data too large\");\n-    }\n-\n-    if !*config::ALLOW_ADVANCED {\n-        meta.views = Some(1);\n-        meta.expiration = None;\n-    }\n-\n-    if let Some(v) = meta.views\n-        && (v > *config::MAX_VIEWS || v < 1)\n-    {\n-        return Err(\"Invalid views\");\n-    }\n-\n-    if let Some(e) = meta.expiration\n-        && (e > *config::MAX_EXPIRATION || e < 1)\n-    {\n-        return Err(\"Invalid expiration\");\n-    }\n-\n-    Ok((meta, req.data))\n+    Ok((Default::default(), vec![0])) /* ~ changed by cargo-mutants ~ */\n }\n \n pub async fn create(body: Bytes) -> Response {\n     let (meta, data) = match parse_create(&body) {\n         Ok(v) => v,\n         Err(e) => return (StatusCode::BAD_REQUEST, e).into_response(),\n     };\n \n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/note/routes.rs:40:5: replace parse_create -> Result<(NoteMeta, Vec<u8>), &'static str> with Ok((Default::default(), vec![0]))",
+    "package": "cryptgeon",
+    "replacement": "Ok((Default::default(), vec![0]))",
+    "span": {
+      "end": {
+        "column": 25,
+        "line": 69
+      },
+      "start": {
+        "column": 5,
+        "line": 40
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace parse_create -> Result<(NoteMeta, Vec<u8>), &'static str> with Ok((Default::default(), vec![1]))\n@@ -32,46 +32,17 @@\n fn valid_id(id: &str) -> bool {\n     let max = (*config::ID_LENGTH as usize) * 2;\n     !id.is_empty() && id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())\n }\n \n /// Pure deserialization + validation for the create endpoint, split out so it\n /// can be unit-tested and fuzzed without HTTP or a live cache.\n pub fn parse_create(body: &[u8]) -> Result<(NoteMeta, Vec<u8>), &'static str> {\n-    let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n-\n-    let mut meta = req.meta;\n-\n-    if meta.views.is_none() && meta.expiration.is_none() {\n-        return Err(\"At least views or expiration must be set\");\n-    }\n-\n-    if meta.extra.len() > *config::EXTRA_SIZE_LIMIT {\n-        return Err(\"Extra data too large\");\n-    }\n-\n-    if !*config::ALLOW_ADVANCED {\n-        meta.views = Some(1);\n-        meta.expiration = None;\n-    }\n-\n-    if let Some(v) = meta.views\n-        && (v > *config::MAX_VIEWS || v < 1)\n-    {\n-        return Err(\"Invalid views\");\n-    }\n-\n-    if let Some(e) = meta.expiration\n-        && (e > *config::MAX_EXPIRATION || e < 1)\n-    {\n-        return Err(\"Invalid expiration\");\n-    }\n-\n-    Ok((meta, req.data))\n+    Ok((Default::default(), vec![1])) /* ~ changed by cargo-mutants ~ */\n }\n \n pub async fn create(body: Bytes) -> Response {\n     let (meta, data) = match parse_create(&body) {\n         Ok(v) => v,\n         Err(e) => return (StatusCode::BAD_REQUEST, e).into_response(),\n     };\n \n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/note/routes.rs:40:5: replace parse_create -> Result<(NoteMeta, Vec<u8>), &'static str> with Ok((Default::default(), vec![1]))",
+    "package": "cryptgeon",
+    "replacement": "Ok((Default::default(), vec![1]))",
+    "span": {
+      "end": {
+        "column": 25,
+        "line": 69
+      },
+      "start": {
+        "column": 5,
+        "line": 40
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace && with || in parse_create\n@@ -36,17 +36,17 @@\n \n /// Pure deserialization + validation for the create endpoint, split out so it\n /// can be unit-tested and fuzzed without HTTP or a live cache.\n pub fn parse_create(body: &[u8]) -> Result<(NoteMeta, Vec<u8>), &'static str> {\n     let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n \n     let mut meta = req.meta;\n \n-    if meta.views.is_none() && meta.expiration.is_none() {\n+    if meta.views.is_none() || /* ~ changed by cargo-mutants ~ */ meta.expiration.is_none() {\n         return Err(\"At least views or expiration must be set\");\n     }\n \n     if meta.extra.len() > *config::EXTRA_SIZE_LIMIT {\n         return Err(\"Extra data too large\");\n     }\n \n     if !*config::ALLOW_ADVANCED {\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:44:29: replace && with || in parse_create",
+    "package": "cryptgeon",
+    "replacement": "||",
+    "span": {
+      "end": {
+        "column": 31,
+        "line": 44
+      },
+      "start": {
+        "column": 29,
+        "line": 44
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace > with == in parse_create\n@@ -40,17 +40,17 @@\n     let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n \n     let mut meta = req.meta;\n \n     if meta.views.is_none() && meta.expiration.is_none() {\n         return Err(\"At least views or expiration must be set\");\n     }\n \n-    if meta.extra.len() > *config::EXTRA_SIZE_LIMIT {\n+    if meta.extra.len() == /* ~ changed by cargo-mutants ~ */ *config::EXTRA_SIZE_LIMIT {\n         return Err(\"Extra data too large\");\n     }\n \n     if !*config::ALLOW_ADVANCED {\n         meta.views = Some(1);\n         meta.expiration = None;\n     }\n \n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:48:25: replace > with == in parse_create",
+    "package": "cryptgeon",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 26,
+        "line": 48
+      },
+      "start": {
+        "column": 25,
+        "line": 48
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace > with < in parse_create\n@@ -40,17 +40,17 @@\n     let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n \n     let mut meta = req.meta;\n \n     if meta.views.is_none() && meta.expiration.is_none() {\n         return Err(\"At least views or expiration must be set\");\n     }\n \n-    if meta.extra.len() > *config::EXTRA_SIZE_LIMIT {\n+    if meta.extra.len() < /* ~ changed by cargo-mutants ~ */ *config::EXTRA_SIZE_LIMIT {\n         return Err(\"Extra data too large\");\n     }\n \n     if !*config::ALLOW_ADVANCED {\n         meta.views = Some(1);\n         meta.expiration = None;\n     }\n \n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:48:25: replace > with < in parse_create",
+    "package": "cryptgeon",
+    "replacement": "<",
+    "span": {
+      "end": {
+        "column": 26,
+        "line": 48
+      },
+      "start": {
+        "column": 25,
+        "line": 48
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace > with >= in parse_create\n@@ -40,17 +40,17 @@\n     let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| \"Invalid msgpack\")?;\n \n     let mut meta = req.meta;\n \n     if meta.views.is_none() && meta.expiration.is_none() {\n         return Err(\"At least views or expiration must be set\");\n     }\n \n-    if meta.extra.len() > *config::EXTRA_SIZE_LIMIT {\n+    if meta.extra.len() >= /* ~ changed by cargo-mutants ~ */ *config::EXTRA_SIZE_LIMIT {\n         return Err(\"Extra data too large\");\n     }\n \n     if !*config::ALLOW_ADVANCED {\n         meta.views = Some(1);\n         meta.expiration = None;\n     }\n \n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:48:25: replace > with >= in parse_create",
+    "package": "cryptgeon",
+    "replacement": ">=",
+    "span": {
+      "end": {
+        "column": 26,
+        "line": 48
+      },
+      "start": {
+        "column": 25,
+        "line": 48
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ delete ! in parse_create\n@@ -44,17 +44,17 @@\n     if meta.views.is_none() && meta.expiration.is_none() {\n         return Err(\"At least views or expiration must be set\");\n     }\n \n     if meta.extra.len() > *config::EXTRA_SIZE_LIMIT {\n         return Err(\"Extra data too large\");\n     }\n \n-    if !*config::ALLOW_ADVANCED {\n+    if  /* ~ changed by cargo-mutants ~ */*config::ALLOW_ADVANCED {\n         meta.views = Some(1);\n         meta.expiration = None;\n     }\n \n     if let Some(v) = meta.views\n         && (v > *config::MAX_VIEWS || v < 1)\n     {\n         return Err(\"Invalid views\");\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "src/note/routes.rs:52:8: delete ! in parse_create",
+    "package": "cryptgeon",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 9,
+        "line": 52
+      },
+      "start": {
+        "column": 8,
+        "line": 52
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace && with || in parse_create\n@@ -50,17 +50,17 @@\n     }\n \n     if !*config::ALLOW_ADVANCED {\n         meta.views = Some(1);\n         meta.expiration = None;\n     }\n \n     if let Some(v) = meta.views\n-        && (v > *config::MAX_VIEWS || v < 1)\n+        || /* ~ changed by cargo-mutants ~ */ (v > *config::MAX_VIEWS || v < 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n         && (e > *config::MAX_EXPIRATION || e < 1)\n     {\n         return Err(\"Invalid expiration\");\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:58:9: replace && with || in parse_create",
+    "package": "cryptgeon",
+    "replacement": "||",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 58
+      },
+      "start": {
+        "column": 9,
+        "line": 58
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace || with && in parse_create\n@@ -50,17 +50,17 @@\n     }\n \n     if !*config::ALLOW_ADVANCED {\n         meta.views = Some(1);\n         meta.expiration = None;\n     }\n \n     if let Some(v) = meta.views\n-        && (v > *config::MAX_VIEWS || v < 1)\n+        && (v > *config::MAX_VIEWS && /* ~ changed by cargo-mutants ~ */ v < 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n         && (e > *config::MAX_EXPIRATION || e < 1)\n     {\n         return Err(\"Invalid expiration\");\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:58:36: replace || with && in parse_create",
+    "package": "cryptgeon",
+    "replacement": "&&",
+    "span": {
+      "end": {
+        "column": 38,
+        "line": 58
+      },
+      "start": {
+        "column": 36,
+        "line": 58
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace > with == in parse_create\n@@ -50,17 +50,17 @@\n     }\n \n     if !*config::ALLOW_ADVANCED {\n         meta.views = Some(1);\n         meta.expiration = None;\n     }\n \n     if let Some(v) = meta.views\n-        && (v > *config::MAX_VIEWS || v < 1)\n+        && (v == /* ~ changed by cargo-mutants ~ */ *config::MAX_VIEWS || v < 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n         && (e > *config::MAX_EXPIRATION || e < 1)\n     {\n         return Err(\"Invalid expiration\");\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:58:15: replace > with == in parse_create",
+    "package": "cryptgeon",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 16,
+        "line": 58
+      },
+      "start": {
+        "column": 15,
+        "line": 58
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace > with < in parse_create\n@@ -50,17 +50,17 @@\n     }\n \n     if !*config::ALLOW_ADVANCED {\n         meta.views = Some(1);\n         meta.expiration = None;\n     }\n \n     if let Some(v) = meta.views\n-        && (v > *config::MAX_VIEWS || v < 1)\n+        && (v < /* ~ changed by cargo-mutants ~ */ *config::MAX_VIEWS || v < 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n         && (e > *config::MAX_EXPIRATION || e < 1)\n     {\n         return Err(\"Invalid expiration\");\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:58:15: replace > with < in parse_create",
+    "package": "cryptgeon",
+    "replacement": "<",
+    "span": {
+      "end": {
+        "column": 16,
+        "line": 58
+      },
+      "start": {
+        "column": 15,
+        "line": 58
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace > with >= in parse_create\n@@ -50,17 +50,17 @@\n     }\n \n     if !*config::ALLOW_ADVANCED {\n         meta.views = Some(1);\n         meta.expiration = None;\n     }\n \n     if let Some(v) = meta.views\n-        && (v > *config::MAX_VIEWS || v < 1)\n+        && (v >= /* ~ changed by cargo-mutants ~ */ *config::MAX_VIEWS || v < 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n         && (e > *config::MAX_EXPIRATION || e < 1)\n     {\n         return Err(\"Invalid expiration\");\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:58:15: replace > with >= in parse_create",
+    "package": "cryptgeon",
+    "replacement": ">=",
+    "span": {
+      "end": {
+        "column": 16,
+        "line": 58
+      },
+      "start": {
+        "column": 15,
+        "line": 58
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace < with == in parse_create\n@@ -50,17 +50,17 @@\n     }\n \n     if !*config::ALLOW_ADVANCED {\n         meta.views = Some(1);\n         meta.expiration = None;\n     }\n \n     if let Some(v) = meta.views\n-        && (v > *config::MAX_VIEWS || v < 1)\n+        && (v > *config::MAX_VIEWS || v == /* ~ changed by cargo-mutants ~ */ 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n         && (e > *config::MAX_EXPIRATION || e < 1)\n     {\n         return Err(\"Invalid expiration\");\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:58:41: replace < with == in parse_create",
+    "package": "cryptgeon",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 42,
+        "line": 58
+      },
+      "start": {
+        "column": 41,
+        "line": 58
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace < with > in parse_create\n@@ -50,17 +50,17 @@\n     }\n \n     if !*config::ALLOW_ADVANCED {\n         meta.views = Some(1);\n         meta.expiration = None;\n     }\n \n     if let Some(v) = meta.views\n-        && (v > *config::MAX_VIEWS || v < 1)\n+        && (v > *config::MAX_VIEWS || v > /* ~ changed by cargo-mutants ~ */ 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n         && (e > *config::MAX_EXPIRATION || e < 1)\n     {\n         return Err(\"Invalid expiration\");\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:58:41: replace < with > in parse_create",
+    "package": "cryptgeon",
+    "replacement": ">",
+    "span": {
+      "end": {
+        "column": 42,
+        "line": 58
+      },
+      "start": {
+        "column": 41,
+        "line": 58
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace < with <= in parse_create\n@@ -50,17 +50,17 @@\n     }\n \n     if !*config::ALLOW_ADVANCED {\n         meta.views = Some(1);\n         meta.expiration = None;\n     }\n \n     if let Some(v) = meta.views\n-        && (v > *config::MAX_VIEWS || v < 1)\n+        && (v > *config::MAX_VIEWS || v <= /* ~ changed by cargo-mutants ~ */ 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n         && (e > *config::MAX_EXPIRATION || e < 1)\n     {\n         return Err(\"Invalid expiration\");\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:58:41: replace < with <= in parse_create",
+    "package": "cryptgeon",
+    "replacement": "<=",
+    "span": {
+      "end": {
+        "column": 42,
+        "line": 58
+      },
+      "start": {
+        "column": 41,
+        "line": 58
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace && with || in parse_create\n@@ -56,17 +56,17 @@\n \n     if let Some(v) = meta.views\n         && (v > *config::MAX_VIEWS || v < 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n-        && (e > *config::MAX_EXPIRATION || e < 1)\n+        || /* ~ changed by cargo-mutants ~ */ (e > *config::MAX_EXPIRATION || e < 1)\n     {\n         return Err(\"Invalid expiration\");\n     }\n \n     Ok((meta, req.data))\n }\n \n pub async fn create(body: Bytes) -> Response {\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:64:9: replace && with || in parse_create",
+    "package": "cryptgeon",
+    "replacement": "||",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 64
+      },
+      "start": {
+        "column": 9,
+        "line": 64
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace || with && in parse_create\n@@ -56,17 +56,17 @@\n \n     if let Some(v) = meta.views\n         && (v > *config::MAX_VIEWS || v < 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n-        && (e > *config::MAX_EXPIRATION || e < 1)\n+        && (e > *config::MAX_EXPIRATION && /* ~ changed by cargo-mutants ~ */ e < 1)\n     {\n         return Err(\"Invalid expiration\");\n     }\n \n     Ok((meta, req.data))\n }\n \n pub async fn create(body: Bytes) -> Response {\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:64:41: replace || with && in parse_create",
+    "package": "cryptgeon",
+    "replacement": "&&",
+    "span": {
+      "end": {
+        "column": 43,
+        "line": 64
+      },
+      "start": {
+        "column": 41,
+        "line": 64
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace > with == in parse_create\n@@ -56,17 +56,17 @@\n \n     if let Some(v) = meta.views\n         && (v > *config::MAX_VIEWS || v < 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n-        && (e > *config::MAX_EXPIRATION || e < 1)\n+        && (e == /* ~ changed by cargo-mutants ~ */ *config::MAX_EXPIRATION || e < 1)\n     {\n         return Err(\"Invalid expiration\");\n     }\n \n     Ok((meta, req.data))\n }\n \n pub async fn create(body: Bytes) -> Response {\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:64:15: replace > with == in parse_create",
+    "package": "cryptgeon",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 16,
+        "line": 64
+      },
+      "start": {
+        "column": 15,
+        "line": 64
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace > with < in parse_create\n@@ -56,17 +56,17 @@\n \n     if let Some(v) = meta.views\n         && (v > *config::MAX_VIEWS || v < 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n-        && (e > *config::MAX_EXPIRATION || e < 1)\n+        && (e < /* ~ changed by cargo-mutants ~ */ *config::MAX_EXPIRATION || e < 1)\n     {\n         return Err(\"Invalid expiration\");\n     }\n \n     Ok((meta, req.data))\n }\n \n pub async fn create(body: Bytes) -> Response {\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:64:15: replace > with < in parse_create",
+    "package": "cryptgeon",
+    "replacement": "<",
+    "span": {
+      "end": {
+        "column": 16,
+        "line": 64
+      },
+      "start": {
+        "column": 15,
+        "line": 64
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace > with >= in parse_create\n@@ -56,17 +56,17 @@\n \n     if let Some(v) = meta.views\n         && (v > *config::MAX_VIEWS || v < 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n-        && (e > *config::MAX_EXPIRATION || e < 1)\n+        && (e >= /* ~ changed by cargo-mutants ~ */ *config::MAX_EXPIRATION || e < 1)\n     {\n         return Err(\"Invalid expiration\");\n     }\n \n     Ok((meta, req.data))\n }\n \n pub async fn create(body: Bytes) -> Response {\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:64:15: replace > with >= in parse_create",
+    "package": "cryptgeon",
+    "replacement": ">=",
+    "span": {
+      "end": {
+        "column": 16,
+        "line": 64
+      },
+      "start": {
+        "column": 15,
+        "line": 64
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace < with == in parse_create\n@@ -56,17 +56,17 @@\n \n     if let Some(v) = meta.views\n         && (v > *config::MAX_VIEWS || v < 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n-        && (e > *config::MAX_EXPIRATION || e < 1)\n+        && (e > *config::MAX_EXPIRATION || e == /* ~ changed by cargo-mutants ~ */ 1)\n     {\n         return Err(\"Invalid expiration\");\n     }\n \n     Ok((meta, req.data))\n }\n \n pub async fn create(body: Bytes) -> Response {\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:64:46: replace < with == in parse_create",
+    "package": "cryptgeon",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 47,
+        "line": 64
+      },
+      "start": {
+        "column": 46,
+        "line": 64
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace < with > in parse_create\n@@ -56,17 +56,17 @@\n \n     if let Some(v) = meta.views\n         && (v > *config::MAX_VIEWS || v < 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n-        && (e > *config::MAX_EXPIRATION || e < 1)\n+        && (e > *config::MAX_EXPIRATION || e > /* ~ changed by cargo-mutants ~ */ 1)\n     {\n         return Err(\"Invalid expiration\");\n     }\n \n     Ok((meta, req.data))\n }\n \n pub async fn create(body: Bytes) -> Response {\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:64:46: replace < with > in parse_create",
+    "package": "cryptgeon",
+    "replacement": ">",
+    "span": {
+      "end": {
+        "column": 47,
+        "line": 64
+      },
+      "start": {
+        "column": 46,
+        "line": 64
+      }
+    }
+  },
+  {
+    "diff": "--- src/note/routes.rs\n+++ replace < with <= in parse_create\n@@ -56,17 +56,17 @@\n \n     if let Some(v) = meta.views\n         && (v > *config::MAX_VIEWS || v < 1)\n     {\n         return Err(\"Invalid views\");\n     }\n \n     if let Some(e) = meta.expiration\n-        && (e > *config::MAX_EXPIRATION || e < 1)\n+        && (e > *config::MAX_EXPIRATION || e <= /* ~ changed by cargo-mutants ~ */ 1)\n     {\n         return Err(\"Invalid expiration\");\n     }\n \n     Ok((meta, req.data))\n }\n \n pub async fn create(body: Bytes) -> Response {\n",
+    "file": "src/note/routes.rs",
+    "function": {
+      "function_name": "parse_create",
+      "return_type": "-> Result<(NoteMeta, Vec<u8>), &'static str>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 70
+        },
+        "start": {
+          "column": 1,
+          "line": 37
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/note/routes.rs:64:46: replace < with <= in parse_create",
+    "package": "cryptgeon",
+    "replacement": "<=",
+    "span": {
+      "end": {
+        "column": 47,
+        "line": 64
+      },
+      "start": {
+        "column": 46,
+        "line": 64
+      }
+    }
+  }
+]

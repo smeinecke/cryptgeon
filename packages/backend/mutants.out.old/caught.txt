@@ -1,0 +1,26 @@
+src/note/model.rs:40:5: replace generate_id -> String with String::new()
+src/note/model.rs:40:5: replace generate_id -> String with "xyzzy".into()
+src/note/routes.rs:33:5: replace valid_id -> bool with true
+src/note/routes.rs:33:5: replace valid_id -> bool with false
+src/note/routes.rs:33:45: replace * with + in valid_id
+src/note/routes.rs:33:45: replace * with / in valid_id
+src/note/routes.rs:34:39: replace && with || in valid_id
+src/note/routes.rs:34:20: replace && with || in valid_id
+src/note/routes.rs:34:5: delete ! in valid_id
+src/note/routes.rs:34:32: replace <= with > in valid_id
+src/note/routes.rs:44:29: replace && with || in parse_create
+src/note/routes.rs:48:25: replace > with == in parse_create
+src/note/routes.rs:48:25: replace > with < in parse_create
+src/note/routes.rs:52:8: delete ! in parse_create
+src/note/routes.rs:58:36: replace || with && in parse_create
+src/note/routes.rs:58:15: replace > with == in parse_create
+src/note/routes.rs:58:15: replace > with < in parse_create
+src/note/routes.rs:58:41: replace < with == in parse_create
+src/note/routes.rs:58:41: replace < with > in parse_create
+src/note/routes.rs:58:41: replace < with <= in parse_create
+src/note/routes.rs:64:41: replace || with && in parse_create
+src/note/routes.rs:64:15: replace > with == in parse_create
+src/note/routes.rs:64:15: replace > with < in parse_create
+src/note/routes.rs:64:46: replace < with == in parse_create
+src/note/routes.rs:64:46: replace < with > in parse_create
+src/note/routes.rs:64:46: replace < with <= in parse_create

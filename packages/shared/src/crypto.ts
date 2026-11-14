@@ -21,12 +21,12 @@ export function deriveKey(password: string, salt: Uint8Array): Uint8Array {
   return scrypt(password, salt, { N, r: 8, p: 1, dkLen: KEY_SIZE });
 }
 
-export function encrypt(data: Uint8Array, key: Uint8Array): Uint8Array {
-  const chacha = managedNonce(xchacha20poly1305)(key);
+export function encrypt(data: Uint8Array, key: Uint8Array, aad?: Uint8Array): Uint8Array {
+  const chacha = managedNonce(xchacha20poly1305)(key, aad);
   return chacha.encrypt(data);
 }
 
-export function decrypt(data: Uint8Array, key: Uint8Array): Uint8Array {
-  const chacha = managedNonce(xchacha20poly1305)(key);
+export function decrypt(data: Uint8Array, key: Uint8Array, aad?: Uint8Array): Uint8Array {
+  const chacha = managedNonce(xchacha20poly1305)(key, aad);
   return chacha.decrypt(data);
 }

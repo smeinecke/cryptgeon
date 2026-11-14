@@ -13,8 +13,16 @@ describe("payload", () => {
   it("round-trips with a password and sets extra", () => {
     const { data, extra, key } = packContent({ type: "text", text: "secret" }, "pw123");
     expect(extra.length).toBeGreaterThan(0);
-    const content = unpackContent(data, key);
+    const content = unpackContent(data, key, extra);
     expect(content).toEqual({ type: "text", data: "secret" });
+  });
+
+  it("rejects tampered extra data", () => {
+    const { data, extra, key } = packContent({ type: "text", text: "secret" }, "pw123");
+    const tampered = new Uint8Array(extra);
+    tampered[0] = (tampered[0] ?? 0) ^ 0xff;
+    expect(() => unpackContent(data, key, tampered)).toThrow();
+    expect(() => unpackContent(data, key)).toThrow();
   });
 
   it("round-trips files (FileDTO)", () => {
