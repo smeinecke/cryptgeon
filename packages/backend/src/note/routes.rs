@@ -245,6 +245,19 @@ mod tests {
     }
 
     #[test]
+    fn parse_create_accepts_boundaries() {
+        // Exact limits must be accepted (">", not ">=").
+        let (meta, _) = parse_create(&body(
+            Some(*config::MAX_VIEWS),
+            Some(*config::MAX_EXPIRATION),
+            vec![0u8; *config::EXTRA_SIZE_LIMIT],
+        ))
+        .unwrap();
+        assert_eq!(meta.views, Some(*config::MAX_VIEWS));
+        assert_eq!(meta.expiration, Some(*config::MAX_EXPIRATION));
+    }
+
+    #[test]
     fn parse_create_accepts_valid_requests() {
         for (v, e) in [(Some(1), None), (None, Some(1)), (Some(5), Some(30))] {
             let (meta, data) = parse_create(&body(v, e, vec![])).unwrap();
