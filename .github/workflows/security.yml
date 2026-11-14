@@ -41,7 +41,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: rustsec/audit-check@v2
         with:
-          cwd: packages/backend
+          token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: packages/backend
 
   pnpm-audit:
     name: pnpm audit (npm deps)
@@ -55,8 +56,12 @@ jobs:
           node-version-file: '.nvmrc'
       - name: Install
         run: pnpm install --frozen-lockfile
-      - name: audit
-        run: pnpm audit --audit-level=high
+      # Production deps gate the job; dev-dep advisories are reported but
+      # non-blocking since they are transitives we cannot fix locally.
+      - name: audit (prod)
+        run: pnpm audit --prod
+      - name: audit (all deps, informational)
+        run: pnpm audit || true
 
   semgrep:
     name: semgrep static analysis
