@@ -7,9 +7,7 @@ use axum::{
 use dotenv::dotenv;
 use tower::Layer;
 use tower_http::{
-    compression::CompressionLayer,
-    normalize_path::NormalizePathLayer,
-    services::ServeDir,
+    compression::CompressionLayer, normalize_path::NormalizePathLayer, services::ServeDir,
     set_header::SetResponseHeaderLayer,
 };
 
