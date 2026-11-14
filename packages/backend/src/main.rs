@@ -1,6 +1,7 @@
 use axum::{
     Router, ServiceExt,
     extract::{DefaultBodyLimit, Request},
+    http::{HeaderValue, header},
     routing::{delete, get, post},
 };
 use dotenv::dotenv;
@@ -9,6 +10,7 @@ use tower_http::{
     compression::CompressionLayer,
     normalize_path::NormalizePathLayer,
     services::{ServeDir, ServeFile},
+    set_header::SetResponseHeaderLayer,
 };
 
 #[macro_use]
@@ -27,6 +29,7 @@ async fn api_not_found() -> axum::http::StatusCode {
 #[tokio::main]
 async fn main() {
     dotenv().ok();
+    config::validate();
 
     if !store::can_reach_cache() {
         println!("cannot reach cache");
@@ -61,7 +64,27 @@ async fn main() {
                 .deflate(true)
                 .gzip(true)
                 .zstd(true),
-        );
+        )
+        // script-src 'unsafe-inline' is required by SvelteKit's inline
+        // hydration bootstrap. A nonce-based policy is a possible follow-up.
+        .layer(SetResponseHeaderLayer::if_not_present(
+            header::CONTENT_SECURITY_POLICY,
+            HeaderValue::from_static(
+                "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'",
+            ),
+        ))
+        .layer(SetResponseHeaderLayer::if_not_present(
+            header::X_CONTENT_TYPE_OPTIONS,
+            HeaderValue::from_static("nosniff"),
+        ))
+        .layer(SetResponseHeaderLayer::if_not_present(
+            header::REFERRER_POLICY,
+            HeaderValue::from_static("no-referrer"),
+        ))
+        .layer(SetResponseHeaderLayer::if_not_present(
+            header::X_FRAME_OPTIONS,
+            HeaderValue::from_static("DENY"),
+        ));
 
     let app = NormalizePathLayer::trim_trailing_slash().layer(app);
 
