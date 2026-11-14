@@ -9,11 +9,11 @@ use tower::Layer;
 use tower_http::{
     compression::CompressionLayer,
     normalize_path::NormalizePathLayer,
-    services::{ServeDir, ServeFile},
+    services::ServeDir,
     set_header::SetResponseHeaderLayer,
 };
 
-use cryptgeon::{config, health, note, status, store};
+use cryptgeon::{config, csp, health, note, status, store};
 
 async fn api_not_found() -> axum::http::StatusCode {
     axum::http::StatusCode::NOT_FOUND
@@ -41,9 +41,11 @@ async fn main() {
 
     let api_routes = Router::new().nest("/v3", v3_routes).fallback(api_not_found);
 
-    let index = format!("{}/index.html", config::FRONTEND_PATH.as_str());
-    let serve_dir =
-        ServeDir::new(config::FRONTEND_PATH.to_string()).fallback(ServeFile::new(index));
+    // index.html is served through csp::spa_index (per-request nonce) for "/"
+    // and unknown paths; real asset files are served statically.
+    let serve_dir = ServeDir::new(config::FRONTEND_PATH.to_string())
+        .append_index_html_on_directories(false)
+        .fallback(Router::new().fallback(csp::spa_index));
     let app = Router::new()
         .nest("/api", api_routes)
         .merge(health_routes)
@@ -56,12 +58,12 @@ async fn main() {
                 .gzip(true)
                 .zstd(true),
         )
-        // script-src 'unsafe-inline' is required by SvelteKit's inline
-        // hydration bootstrap. A nonce-based policy is a possible follow-up.
+        // Fallback CSP for non-SPA responses (assets, API). spa_index sets
+        // a stricter nonce-based policy on index.html itself.
         .layer(SetResponseHeaderLayer::if_not_present(
             header::CONTENT_SECURITY_POLICY,
             HeaderValue::from_static(
-                "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'",
+                "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'",
             ),
         ))
         .layer(SetResponseHeaderLayer::if_not_present(
