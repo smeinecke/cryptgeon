@@ -31,7 +31,7 @@
 
 	let { note }: Props = $props()
 
-	const RE_URL = /[A-Za-z]+:\/\/([A-Z a-z0-9\-._~:\/?#\[\]@!$&'()*+,;%=])+/g
+	const RE_URL = /https?:\/\/([A-Za-z0-9\-._~:\/?#\[\]@!$&'()*+,;%=])+/g
 	let files: FileDTO[] = $state([])
 
 async function downloadFile(file: FileDTO) {
