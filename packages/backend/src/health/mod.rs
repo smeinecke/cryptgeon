@@ -3,8 +3,8 @@ use axum::http::StatusCode;
 
 pub async fn report_health() -> (StatusCode,) {
     if store::can_reach_cache() {
-        return (StatusCode::OK,);
+        (StatusCode::OK,)
     } else {
-        return (StatusCode::SERVICE_UNAVAILABLE,);
+        (StatusCode::SERVICE_UNAVAILABLE,)
     }
 }

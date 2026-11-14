@@ -9,3 +9,9 @@ target
 # Testing
 test-results
 tmp
+
+# Backend fuzzing + mutation artifacts
+packages/backend/fuzz/corpus
+packages/backend/fuzz/artifacts
+packages/backend/fuzz/Cargo.lock
+packages/backend/mutants.out*

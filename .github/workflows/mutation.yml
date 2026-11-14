@@ -1,0 +1,22 @@
+name: Mutation testing
+
+on:
+  workflow_dispatch:
+  # Uncomment to run mutation testing every night.
+  # schedule:
+  #   - cron: '0 4 * * *'
+
+jobs:
+  mutants:
+    name: cargo-mutants
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-mutants
+        run: cargo install cargo-mutants --locked
+
+      - name: Run cargo-mutants
+        run: cargo mutants --manifest-path packages/backend/Cargo.toml

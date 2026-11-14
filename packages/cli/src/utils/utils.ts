@@ -9,7 +9,7 @@ export function exit(message: string) {
 export async function checkConstrains(constrains: { views?: number; minutes?: number }) {
   if (!constrains.views && !constrains.minutes) constrains.views = 1
 
-  const response = await status()
+  const response = await status().catch(() => exit('Could not reach server'))
   if (constrains.views && constrains.views > response.max_views)
     exit(`Only a maximum of ${response.max_views} views allowed. ${constrains.views} given.`)
   if (constrains.minutes && constrains.minutes > response.max_expiration)

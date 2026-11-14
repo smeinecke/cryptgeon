@@ -109,29 +109,30 @@
 		}
 
 		isPasting = true
+		try {
+			const dtos: FileDTO[] = await Promise.all(
+				pasted.map(async (file) => {
+					const ext = file.name.includes('.') ? '' : `.${mimeToExt(file.type)}`
+					const name =
+						file.name || `pasted-file-${Date.now()}-${Math.round(Math.random() * 1000)}${ext}`
+					const renamed = new File([file], name, { type: file.type })
+					const data = new Uint8Array(await renamed.arrayBuffer())
+					return {
+						name: renamed.name,
+						mime: renamed.type,
+						size: renamed.size,
+						data,
+					}
+				})
+			)
 
-		const dtos: FileDTO[] = await Promise.all(
-			pasted.map(async (file) => {
-				const ext = file.name.includes('.') ? '' : `.${mimeToExt(file.type)}`
-				const name =
-					file.name || `pasted-file-${Date.now()}-${Math.round(Math.random() * 1000)}${ext}`
-				const renamed = new File([file], name, { type: file.type })
-				const data = new Uint8Array(await renamed.arrayBuffer())
-				return {
-					name: renamed.name,
-					mime: renamed.type,
-					size: renamed.size,
-					data,
-				}
-			})
-		)
-
-		if (dtos.length > 0) {
-			if (!isFile) isFile = true
-			files = [...files, ...dtos]
+			if (dtos.length > 0) {
+				if (!isFile) isFile = true
+				files = [...files, ...dtos]
+			}
+		} finally {
+			isPasting = false
 		}
-
-		isPasting = false
 	}
 
 	class EmptyContentError extends Error {}
@@ -147,21 +148,24 @@
 				throw new EmptyContentError()
 			}
 
+			const limit = parseInt((timeExpiration ? note.expiration : note.views) as any)
+			if (!Number.isFinite(limit) || limit < 1) throw new EmptyContentError()
+
+			// transfer() detaches buffers - pass copies so failed submits can be retried
+			const fileCopies = ($state.snapshot(files) as FileDTO[]).map((f) => ({
+				...f,
+				data: f.data.slice(0),
+			}))
 			const noteInput: NoteInput = isFile
 				? transfer(
-						{
-							type: 'files',
-							files: $state.snapshot(files),
-						},
-						files.map((f) => f.data.buffer)
+						{ type: 'files', files: fileCopies },
+						fileCopies.map((f) => f.data.buffer)
 					)
 				: { type: 'text', text: textContent }
 			const payload = await worker.pack(noteInput, customPassword || undefined)
 			const serverNote: ServerNote = {
 				meta: {
-					...(timeExpiration
-						? { expiration: parseInt(note.expiration as any) }
-						: { views: parseInt(note.views as any) }),
+					...(timeExpiration ? { expiration: limit } : { views: limit }),
 					extra: payload.extra,
 				},
 				data: payload.data,

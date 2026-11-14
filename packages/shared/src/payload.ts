@@ -1,6 +1,7 @@
 import { encode, decode } from "@msgpack/msgpack";
 import { compress, decompress } from "./compression.js";
 import {
+  N,
   deriveKey,
   encrypt,
   decrypt,
@@ -25,7 +26,7 @@ export function packContent(input: NoteInput, password?: string): PackResult {
   if (password) {
     const salt = randomBytes(16);
     key = deriveKey(password, salt);
-    extra = encode({ salt, N: 32768, r: 8, p: 1 });
+    extra = encode({ salt, N, r: 8, p: 1 });
   } else {
     key = generateKey();
     extra = new Uint8Array();
@@ -44,6 +45,12 @@ export function unpackContent(data: Uint8Array, key: Uint8Array): NoteContent {
   const content = decode(decompress(decrypt(data, key))) as NoteContent;
   if (content.type !== "text" && content.type !== "files") {
     throw new Error("Unknown content type");
+  }
+  if (content.type === "files" && !Array.isArray(content.data)) {
+    throw new Error("Malformed files payload");
+  }
+  if (content.type === "text" && typeof content.data !== "string") {
+    throw new Error("Malformed text payload");
   }
   return content;
 }

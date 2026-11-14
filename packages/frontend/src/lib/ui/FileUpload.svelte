@@ -28,6 +28,8 @@
 			const toAdd = await Promise.all(Array.from(input.files).map(fileToDTO))
 			files = [...files, ...toAdd]
 		}
+		// reset so selecting the same file again fires onchange
+		input.value = ''
 	}
 
 	function clear(e: Event) {

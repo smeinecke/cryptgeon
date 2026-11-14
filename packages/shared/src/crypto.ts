@@ -10,7 +10,7 @@ export {
   randomBytes,
 } from "@noble/ciphers/utils.js";
 
-const N = 2 ** 15;
+export const N = 2 ** 15;
 const KEY_SIZE = 32;
 
 export function generateKey(): Uint8Array {

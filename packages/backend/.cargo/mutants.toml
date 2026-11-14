@@ -1,0 +1,43 @@
+# cargo-mutants configuration.
+#
+# Everything that needs a live cache or a running HTTP server is excluded:
+# covered by the e2e suite instead. Pure functions (parse_create, valid_id,
+# generate_id, serde models) are expected to be killed by the unit tests.
+
+exclude_re = [
+    "replace main with",
+    "\\bin main\\b",
+    "replace api_not_found ->",
+    "\\bin api_not_found\\b",
+    "replace validate ->",
+    "replace validate with",
+    "\\bin validate\\b",
+    # Cache-bound store layer.
+    "replace conn ->",
+    "\\bin conn\\b",
+    "replace can_reach_cache ->",
+    "\\bin can_reach_cache\\b",
+    "replace prefixed ->",
+    "\\bin prefixed\\b",
+    "replace set ->",
+    "\\bin store::set\\b",
+    "replace get_meta ->",
+    "\\bin get_meta\\b",
+    "replace get_data ->",
+    "\\bin get_data\\b",
+    "replace consume ->",
+    "\\bin consume\\b",
+    # HTTP handlers: exercised via the playwright API spec.
+    "replace create ->",
+    "\\bin create\\b",
+    "replace preview ->",
+    "\\bin preview\\b",
+    "replace view ->",
+    "\\bin view\\b",
+    "replace report_health ->",
+    "\\bin report_health\\b",
+    "replace get_status ->",
+    "\\bin get_status\\b",
+    "replace now ->",
+    "\\bin now\\b",
+]

@@ -1,0 +1,24 @@
+name: Fuzz
+
+on:
+  workflow_dispatch:
+  # Uncomment to fuzz every night.
+  # schedule:
+  #   - cron: '0 5 * * *'
+
+jobs:
+  fuzz:
+    name: cargo-fuzz (libFuzzer + ASan)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@nightly
+
+      - name: Install cargo-fuzz
+        run: cargo install cargo-fuzz --locked
+
+      - name: Fuzz msgpack create parser (5 min)
+        run: |
+          cd packages/backend
+          cargo fuzz run parse_create -- -max_total_time=300 -timeout=10 -detect_leaks=0

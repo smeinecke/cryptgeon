@@ -83,3 +83,28 @@ lazy_static! {
         .parse()
         .unwrap();
 }
+
+/// Force-initialize all lazily parsed env vars so malformed configuration
+/// fails fast at startup instead of panicking per request.
+pub fn validate() {
+    lazy_static::initialize(&VERSION);
+    lazy_static::initialize(&FRONTEND_PATH);
+    lazy_static::initialize(&LISTEN_ADDR);
+    lazy_static::initialize(&VERBOSITY);
+    lazy_static::initialize(&LIMIT);
+    lazy_static::initialize(&MAX_VIEWS);
+    lazy_static::initialize(&MAX_EXPIRATION);
+    lazy_static::initialize(&ALLOW_ADVANCED);
+    lazy_static::initialize(&ID_LENGTH);
+    lazy_static::initialize(&CACHE_PREFIX);
+    lazy_static::initialize(&ALLOW_FILES);
+    lazy_static::initialize(&IMPRINT_URL);
+    lazy_static::initialize(&IMPRINT_HTML);
+    lazy_static::initialize(&EXTRA_SIZE_LIMIT);
+    lazy_static::initialize(&THEME_IMAGE);
+    lazy_static::initialize(&THEME_TEXT);
+    lazy_static::initialize(&THEME_PAGE_TITLE);
+    lazy_static::initialize(&THEME_FAVICON);
+    lazy_static::initialize(&THEME_NEW_NOTE_NOTICE);
+    lazy_static::initialize(&THEME_HOME_LINK);
+}

@@ -24,6 +24,8 @@ WORKDIR /app
 RUN apk add --no-cache curl libgcc
 COPY --from=backend /tmp/target/release/cryptgeon .
 COPY --from=client /tmp/packages/frontend/build ./frontend
+RUN adduser -D -H -s /sbin/nologin cryptgeon
+USER cryptgeon
 ENV FRONTEND_PATH="./frontend"
 ENV CACHE="redis://cache/"
 EXPOSE 8000

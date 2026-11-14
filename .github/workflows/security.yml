@@ -1,0 +1,82 @@
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust:
+    name: fmt, clippy, tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: packages/backend
+
+      - name: cargo fmt --check
+        run: cargo fmt --manifest-path packages/backend/Cargo.toml --all -- --check
+
+      - name: cargo clippy
+        run: cargo clippy --manifest-path packages/backend/Cargo.toml --all-targets -- -D warnings
+
+      - name: cargo test
+        run: cargo test --manifest-path packages/backend/Cargo.toml
+
+  audit:
+    name: cargo audit (RustSec)
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rustsec/audit-check@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: packages/backend
+
+  pnpm-audit:
+    name: pnpm audit (npm deps)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          cache: 'pnpm'
+          node-version-file: '.nvmrc'
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      # Production deps gate the job; dev-dep advisories are reported but
+      # non-blocking since they are transitives we cannot fix locally.
+      - name: audit (prod)
+        run: pnpm audit --prod
+      - name: audit (all deps, informational)
+        run: pnpm audit || true
+
+  semgrep:
+    name: semgrep static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - name: Install semgrep
+        run: pip install semgrep
+      - name: semgrep
+        run: >
+          semgrep scan
+          --config p/security-audit --config p/secrets
+          --config p/command-injection --config p/insecure-transport
+          --config p/dockerfile --config p/typescript
+          --error --metrics=off
