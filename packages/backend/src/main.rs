@@ -13,14 +13,7 @@ use tower_http::{
     set_header::SetResponseHeaderLayer,
 };
 
-#[macro_use]
-extern crate lazy_static;
-
-mod config;
-mod health;
-mod note;
-mod status;
-mod store;
+use cryptgeon::{config, health, note, status, store};
 
 async fn api_not_found() -> axum::http::StatusCode {
     axum::http::StatusCode::NOT_FOUND
@@ -46,11 +39,9 @@ async fn main() {
         .nest("/notes", notes_routes)
         .merge(status_routes);
 
-    let api_routes = Router::new()
-        .nest("/v3", v3_routes)
-        .fallback(api_not_found);
+    let api_routes = Router::new().nest("/v3", v3_routes).fallback(api_not_found);
 
-    let index = format!("{}{}", config::FRONTEND_PATH.to_string(), "/index.html");
+    let index = format!("{}/index.html", config::FRONTEND_PATH.as_str());
     let serve_dir =
         ServeDir::new(config::FRONTEND_PATH.to_string()).fallback(ServeFile::new(index));
     let app = Router::new()

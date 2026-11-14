@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::config;
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct NoteMeta {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub views: Option<u32>,
@@ -46,4 +46,47 @@ pub fn generate_id() -> String {
         result.push_str(&bs62::encode_data(&id));
     }
     result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn generated_ids_match_valid_id_shape() {
+        for _ in 0..64 {
+            let id = generate_id();
+            assert!(id.len() >= *config::ID_LENGTH as usize);
+            assert!(id.len() <= (*config::ID_LENGTH as usize) * 2);
+            assert!(id.bytes().all(|b| b.is_ascii_alphanumeric()));
+        }
+    }
+
+    #[test]
+    fn generated_ids_do_not_collide() {
+        let ids: std::collections::HashSet<String> = (0..256).map(|_| generate_id()).collect();
+        assert_eq!(ids.len(), 256);
+    }
+
+    #[test]
+    fn note_meta_msgpack_roundtrip() {
+        let meta = NoteMeta {
+            views: Some(3),
+            expiration: Some(60),
+            extra: vec![1, 2, 3],
+        };
+        let bytes = rmp_serde::to_vec_named(&meta).unwrap();
+        let back: NoteMeta = rmp_serde::from_slice(&bytes).unwrap();
+        assert_eq!(back.views, Some(3));
+        assert_eq!(back.expiration, Some(60));
+        assert_eq!(back.extra, vec![1, 2, 3]);
+    }
+
+    #[test]
+    fn note_meta_missing_extra_defaults_empty() {
+        let bytes = rmp_serde::to_vec_named(&serde_json::json!({ "views": 1 })).unwrap();
+        let meta: NoteMeta = rmp_serde::from_slice(&bytes).unwrap();
+        assert_eq!(meta.views, Some(1));
+        assert!(meta.extra.is_empty());
+    }
 }
