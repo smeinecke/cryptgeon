@@ -46,5 +46,11 @@ export function unpackContent(data: Uint8Array, key: Uint8Array): NoteContent {
   if (content.type !== "text" && content.type !== "files") {
     throw new Error("Unknown content type");
   }
+  if (content.type === "files" && !Array.isArray(content.data)) {
+    throw new Error("Malformed files payload");
+  }
+  if (content.type === "text" && typeof content.data !== "string") {
+    throw new Error("Malformed text payload");
+  }
   return content;
 }
