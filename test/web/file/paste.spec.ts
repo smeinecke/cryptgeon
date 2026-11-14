@@ -17,12 +17,15 @@ test.describe("@web", () => {
     await page.goto("/");
     await page.waitForSelector("form");
 
-    // Create a paste event with clipboardData containing the image file
+    // Create a paste event with clipboardData containing the image file.
+    // Note: fetch(data:) is blocked by the CSP connect-src directive, so the
+    // bytes are decoded directly instead.
     await page.evaluate(
       async ({ base64, mimeType }) => {
-        const response = await fetch(`data:${mimeType};base64,${base64}`);
-        const blob = await response.blob();
-        const file = new File([blob], "image.jpg", { type: mimeType });
+        const bin = atob(base64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        const file = new File([bytes], "image.jpg", { type: mimeType });
 
         const dt = new DataTransfer();
         dt.items.add(file);
