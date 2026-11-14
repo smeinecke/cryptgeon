@@ -1,6 +1,7 @@
 import { encode, decode } from "@msgpack/msgpack";
 import { compress, decompress } from "./compression.js";
 import {
+  N,
   deriveKey,
   encrypt,
   decrypt,
@@ -25,7 +26,7 @@ export function packContent(input: NoteInput, password?: string): PackResult {
   if (password) {
     const salt = randomBytes(16);
     key = deriveKey(password, salt);
-    extra = encode({ salt, N: 32768, r: 8, p: 1 });
+    extra = encode({ salt, N, r: 8, p: 1 });
   } else {
     key = generateKey();
     extra = new Uint8Array();
