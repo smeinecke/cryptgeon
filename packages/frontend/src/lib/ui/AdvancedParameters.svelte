@@ -51,8 +51,9 @@
 			bind:value={note.expiration}
 			disabled={!timeExpiration}
 			max={$status?.max_expiration}
+			min={1}
 			validate={(v) =>
-				($status && v < $status?.max_expiration) ||
+				($status && v <= $status?.max_expiration && v > 0) ||
 				$t('home.errors.max', { values: { n: $status?.max_expiration ?? 0 } })}
 		/>
 	</div>

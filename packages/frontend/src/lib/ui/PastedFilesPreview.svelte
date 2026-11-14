@@ -12,10 +12,12 @@
 	let previewUrls: string[] = $state([])
 
 	$effect(() => {
-		const urls = files.map((f) => URL.createObjectURL(new Blob([f.data.slice(0)], { type: f.mime })))
+		const urls = files.map((f) =>
+			isImage(f.mime) ? URL.createObjectURL(new Blob([f.data.slice(0)], { type: f.mime })) : ''
+		)
 		previewUrls = urls
 		return () => {
-			for (const url of urls) URL.revokeObjectURL(url)
+			for (const url of urls) if (url) URL.revokeObjectURL(url)
 		}
 	})
 

@@ -30,7 +30,6 @@
 	let type = $derived(isPassword ? (hidden ? 'password' : 'text') : rest.type)
 
 	function toggle() {
-		console.debug('toggle')
 		hidden = !hidden
 	}
 

@@ -21,5 +21,9 @@ export type StatusInfo = {
 export const status = writable<null | StatusInfo>(null)
 
 export async function init() {
-	status.set((await apiStatus()) as StatusInfo)
+	try {
+		status.set((await apiStatus()) as StatusInfo)
+	} catch (e) {
+		console.error('could not load server status', e)
+	}
 }
