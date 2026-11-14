@@ -1,0 +1,21 @@
+--- src/note/routes.rs
++++ replace > with >= in parse_create
+@@ -40,17 +40,17 @@
+     let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| "Invalid msgpack")?;
+ 
+     let mut meta = req.meta;
+ 
+     if meta.views.is_none() && meta.expiration.is_none() {
+         return Err("At least views or expiration must be set");
+     }
+ 
+-    if meta.extra.len() > *config::EXTRA_SIZE_LIMIT {
++    if meta.extra.len() >= /* ~ changed by cargo-mutants ~ */ *config::EXTRA_SIZE_LIMIT {
+         return Err("Extra data too large");
+     }
+ 
+     if !*config::ALLOW_ADVANCED {
+         meta.views = Some(1);
+         meta.expiration = None;
+     }
+ 

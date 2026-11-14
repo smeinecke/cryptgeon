@@ -1,0 +1,21 @@
+--- src/note/routes.rs
++++ delete ! in parse_create
+@@ -44,17 +44,17 @@
+     if meta.views.is_none() && meta.expiration.is_none() {
+         return Err("At least views or expiration must be set");
+     }
+ 
+     if meta.extra.len() > *config::EXTRA_SIZE_LIMIT {
+         return Err("Extra data too large");
+     }
+ 
+-    if !*config::ALLOW_ADVANCED {
++    if  /* ~ changed by cargo-mutants ~ */*config::ALLOW_ADVANCED {
+         meta.views = Some(1);
+         meta.expiration = None;
+     }
+ 
+     if let Some(v) = meta.views
+         && (v > *config::MAX_VIEWS || v < 1)
+     {
+         return Err("Invalid views");

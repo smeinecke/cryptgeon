@@ -1,0 +1,5 @@
+src/note/routes.rs:40:5: replace parse_create -> Result<(NoteMeta, Vec<u8>), &'static str> with Ok((Default::default(), vec![]))
+src/note/routes.rs:40:5: replace parse_create -> Result<(NoteMeta, Vec<u8>), &'static str> with Ok((Default::default(), vec![0]))
+src/note/routes.rs:40:5: replace parse_create -> Result<(NoteMeta, Vec<u8>), &'static str> with Ok((Default::default(), vec![1]))
+src/note/routes.rs:58:9: replace && with || in parse_create
+src/note/routes.rs:64:9: replace && with || in parse_create

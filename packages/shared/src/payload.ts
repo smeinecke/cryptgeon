@@ -36,12 +36,16 @@ export function packContent(input: NoteInput, password?: string): PackResult {
       ? { type: "text", data: input.text }
       : { type: "files", data: input.files };
 
-  const encoded = encrypt(compress(encode(content)), key);
+  const encoded = encrypt(compress(encode(content)), key, extra);
   return { data: encoded, extra, key };
 }
 
-export function unpackContent(data: Uint8Array, key: Uint8Array): NoteContent {
-  const content = decode(decompress(decrypt(data, key))) as NoteContent;
+export function unpackContent(
+  data: Uint8Array,
+  key: Uint8Array,
+  extra?: Uint8Array,
+): NoteContent {
+  const content = decode(decompress(decrypt(data, key, extra))) as NoteContent;
   if (content.type !== "text" && content.type !== "files") {
     throw new Error("Unknown content type");
   }

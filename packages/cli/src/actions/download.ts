@@ -32,7 +32,7 @@ export async function download(url: URL, all: boolean, suggestedPassword?: strin
   const note = await get(id)
   if (!note) throw new Error('Could not load note')
 
-  const content = unpackContent(note.data, key)
+  const content = unpackContent(note.data, key, meta.extra)
 
   switch (content.type) {
     case 'files':

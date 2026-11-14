@@ -1,0 +1,50 @@
+--- src/note/routes.rs
++++ replace parse_create -> Result<(NoteMeta, Vec<u8>), &'static str> with Ok((Default::default(), vec![]))
+@@ -32,46 +32,17 @@
+ fn valid_id(id: &str) -> bool {
+     let max = (*config::ID_LENGTH as usize) * 2;
+     !id.is_empty() && id.len() <= max && id.bytes().all(|b| b.is_ascii_alphanumeric())
+ }
+ 
+ /// Pure deserialization + validation for the create endpoint, split out so it
+ /// can be unit-tested and fuzzed without HTTP or a live cache.
+ pub fn parse_create(body: &[u8]) -> Result<(NoteMeta, Vec<u8>), &'static str> {
+-    let req: CreateRequest = rmp_serde::from_slice(body).map_err(|_| "Invalid msgpack")?;
+-
+-    let mut meta = req.meta;
+-
+-    if meta.views.is_none() && meta.expiration.is_none() {
+-        return Err("At least views or expiration must be set");
+-    }
+-
+-    if meta.extra.len() > *config::EXTRA_SIZE_LIMIT {
+-        return Err("Extra data too large");
+-    }
+-
+-    if !*config::ALLOW_ADVANCED {
+-        meta.views = Some(1);
+-        meta.expiration = None;
+-    }
+-
+-    if let Some(v) = meta.views
+-        && (v > *config::MAX_VIEWS || v < 1)
+-    {
+-        return Err("Invalid views");
+-    }
+-
+-    if let Some(e) = meta.expiration
+-        && (e > *config::MAX_EXPIRATION || e < 1)
+-    {
+-        return Err("Invalid expiration");
+-    }
+-
+-    Ok((meta, req.data))
++    Ok((Default::default(), vec![])) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ pub async fn create(body: Bytes) -> Response {
+     let (meta, data) = match parse_create(&body) {
+         Ok(v) => v,
+         Err(e) => return (StatusCode::BAD_REQUEST, e).into_response(),
+     };
+ 

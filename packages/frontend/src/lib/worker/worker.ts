@@ -7,8 +7,8 @@ const contract: WorkerConract = {
 		const content = packContent(input, password)
 		return transfer(content, [content.data.buffer, content.extra.buffer, content.key.buffer])
 	},
-	unpack(data, key) {
-		return unpackContent(data, key)
+	unpack(data, key, extra) {
+		return unpackContent(data, key, extra)
 	},
 }
 

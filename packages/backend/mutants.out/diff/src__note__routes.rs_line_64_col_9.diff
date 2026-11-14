@@ -1,0 +1,21 @@
+--- src/note/routes.rs
++++ replace && with || in parse_create
+@@ -56,17 +56,17 @@
+ 
+     if let Some(v) = meta.views
+         && (v > *config::MAX_VIEWS || v < 1)
+     {
+         return Err("Invalid views");
+     }
+ 
+     if let Some(e) = meta.expiration
+-        && (e > *config::MAX_EXPIRATION || e < 1)
++        || /* ~ changed by cargo-mutants ~ */ (e > *config::MAX_EXPIRATION || e < 1)
+     {
+         return Err("Invalid expiration");
+     }
+ 
+     Ok((meta, req.data))
+ }
+ 
+ pub async fn create(body: Bytes) -> Response {

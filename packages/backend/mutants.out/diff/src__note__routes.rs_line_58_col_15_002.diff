@@ -1,0 +1,21 @@
+--- src/note/routes.rs
++++ replace > with >= in parse_create
+@@ -50,17 +50,17 @@
+     }
+ 
+     if !*config::ALLOW_ADVANCED {
+         meta.views = Some(1);
+         meta.expiration = None;
+     }
+ 
+     if let Some(v) = meta.views
+-        && (v > *config::MAX_VIEWS || v < 1)
++        && (v >= /* ~ changed by cargo-mutants ~ */ *config::MAX_VIEWS || v < 1)
+     {
+         return Err("Invalid views");
+     }
+ 
+     if let Some(e) = meta.expiration
+         && (e > *config::MAX_EXPIRATION || e < 1)
+     {
+         return Err("Invalid expiration");

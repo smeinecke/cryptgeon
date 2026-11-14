@@ -80,7 +80,7 @@
 				key = hexToBytes(password!)
 			}
 
-			const content = await worker.unpack(serverNote.data, key)
+			const content = await worker.unpack(serverNote.data, key, serverNote.meta.extra)
 
 			switch (content.type) {
 				case 'text':
