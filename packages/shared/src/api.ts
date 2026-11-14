@@ -30,7 +30,7 @@ export async function create(note: ServerNote): Promise<{ id: string }> {
 }
 
 export async function info(id: string): Promise<ServerNote["meta"] | null> {
-  const res = await fetch(api(`notes/${id}`));
+  const res = await fetch(api(`notes/${encodeURIComponent(id)}`));
   if (!res.ok) return null;
   const buf = await res.arrayBuffer();
   const data = decode(new Uint8Array(buf)) as any;
@@ -41,7 +41,7 @@ export async function info(id: string): Promise<ServerNote["meta"] | null> {
 }
 
 export async function get(id: string): Promise<ServerNote | null> {
-  const res = await fetch(api(`notes/${id}`), { method: "DELETE" });
+  const res = await fetch(api(`notes/${encodeURIComponent(id)}`), { method: "DELETE" });
   if (!res.ok) return null;
   const buf = await res.arrayBuffer();
   const data = decode(new Uint8Array(buf)) as any;
