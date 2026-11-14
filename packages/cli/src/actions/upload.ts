@@ -25,10 +25,11 @@ export async function upload(input: string | string[], options: UploadOptions): 
 async function fileDTOSfromPaths(paths: string[]): Promise<FileDTO[]> {
   return Promise.all(
     paths.map(async (path) => {
-      const extension = path.substring(path.indexOf('.') + 1)
+      const name = basename(path)
+      const extension = name.includes('.') ? name.substring(name.lastIndexOf('.') + 1) : ''
       const data = new Uint8Array(await readFile(path))
       return {
-        name: basename(path),
+        name,
         mime: mime.getType(extension) ?? 'application/octet-stream',
         size: data.length,
         data,
